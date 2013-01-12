@@ -1,0 +1,30 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+
+services:
+  - mysql
+
+env:
+  - DB=mysql
+
+before_script:
+  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS mwi_tests;" -uroot; fi
+  - echo "<?php " > ./application/bundles.php
+  - echo "return array("  >> ./application/bundles.php
+  - echo "'settings' => array('auto'    => true, 'handles' => 'settings',)," >> ./application/bundles.php
+  - echo "'modules' => array('auto'    => true, 'handles' => 'modules',)," >> ./application/bundles.php
+  - echo "'admin' => array('auto' => true)," >> ./application/bundles.php
+  - echo "'themes' => array('auto' => true)," >> ./application/bundles.php
+  - echo "'auth' => array('auto' => true,'handles' => 'login')," >> ./application/bundles.php
+  - echo "'users' => array('auto' => true, ),);" >> ./application/bundles.php
+
+script: 
+  - php artisan test
+  - php artisan test users
+  - php artisan test auth
+  - php artisan test admin
+  - php artisan test settings
+  - php artisan test themes
