@@ -1,0 +1,1 @@
+<div>test footer partial<div><?php if(isset($footer_menu)) { echo $footer_menu; } ?>

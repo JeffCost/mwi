@@ -1,0 +1,1 @@
+<h1>Basic Admin Test Layout</h1>{{ $theme_content }}{{  themes\render_partial('footer') }}

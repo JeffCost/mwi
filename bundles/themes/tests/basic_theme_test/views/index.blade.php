@@ -1,0 +1,1 @@
+Index Content View {{ $username }}
