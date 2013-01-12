@@ -1,7 +1,10 @@
 Myopengrid Web Interface
 ===
 
+[![Build Status](https://secure.travis-ci.org/JeffCost/mwi.png)](http://travis-ci.org/JeffCost/mwi)
+
 Mwi is a web interface and content management system for opensim.
+
 ## Installation
 
 Make sure to set full permissions on the Mwi storage directory
