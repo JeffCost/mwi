@@ -1,4 +1,5 @@
 <?php themes\add_asset('check_slug.js', 'modules/groups', array(), 'footer') ?>
+
 <div style="margin-top:25px;" class="row">
     <div class="span12">
         {{Form::open( URL::base() .'/'.ADM_URI.'/groups/'.$group->id, 'PUT', array('class' => 'form-horizontal'))}}
