@@ -33,7 +33,6 @@ class Email_Backend_Email_Email_Controller extends Admin_Controller {
     {
         $rules = array(
             'mail_protocol' => 'required|mail_protocol',
-            'server_email'  => 'required|email',
         );
 
         $validation = Email\Validator::make(Input::all(), $rules)->speaks(ADM_LANG);
@@ -95,18 +94,55 @@ class Email_Backend_Email_Email_Controller extends Admin_Controller {
 
         if ($validation->passes())
         {
-            $email_address = Config::get('settings::core.server_email');
+            // Get email service type
+            $email_protocol = Config::get('settings::core.mail_protocol');
+
+            $email_address = '';
+
+            if(isset($email_protocol) and !empty($email_protocol))
+            {
+                switch ($email_protocol) {
+                    case 'mail':
+                    case 'sendmail':
+                        $email_address = Config::get('settings::core.server_email');
+                        break;
+                    case 'smtp':
+                        $email_address = Config::get('settings::core.mail_smtp_user');
+                        break;
+                    default:
+                        \Session::flash('message', __('email::lang.Your email protocol settings are invalid')->get(ADM_LANG));
+                        \Session::flash('message_type', 'error');
+                        return Redirect::to(ADM_URI.'/email/new');
+                        break;
+                }
+            }
+            
+            
 
             $email_type = $validation->attributes['email_type'] == 'html' ? true : false;
 
             $mailer = new Email\Message;
 
+            // new xblade to parse the email template
+            $xblade = new Xblade();
+            $xblade->scopeGlue(':');
+
+            // data to be passed to email template
+            
+            $data['url']['base']           = URL::base();
+            $data['settings']['site_name'] = Config::get('settings::core.site_name');
+            $data['request']['ip']         = Request::ip();
+            $data['request']['user_agent'] = implode(', ', Request::header('user-agent'));
+            $data['request']['languages']  = implode(', ', Request::languages());
+
             foreach ($validation->attributes['email_list'] as $email) 
             {
+                $data['user'] = Users\Model\User::where_email($email)->first();
+                
                 $mailer::to($email)
                     ->from($email_address)
-                    ->subject($validation->attributes['subject'])
-                    ->body($validation->attributes['email_body'])
+                    ->subject($xblade->parse($validation->attributes['subject'], $data))
+                    ->body($xblade->parse($validation->attributes['email_body'], $data))
                     ->html($email_type)
                     ->send();
             }
