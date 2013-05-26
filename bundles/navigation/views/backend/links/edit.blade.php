@@ -135,14 +135,14 @@
 
             <li>
                 <label for="class">{{ Lang::line('navigation::lang.Class')->get(ADM_LANG) }}</label>
-                <input type="text" name="class" value=""  />
+                <input type="text" name="class" value="{{$link->class}}"  />
             </li>
         </ul>
         
         <div class="btn-group" style="margin-left:25px; margin-top:25px;">
             <button type="submit" name="btnAction" value="save" class="btn btn-primary"><i class="icon-ok"></i> {{ Lang::line('navigation::lang.Save')->get(ADM_LANG) }}
             </button>
-            <a href="{{URL::base().DS.ADM_URI.DS}}navigation" class="btn cancel">{{ Lang::line('navigation::lang.Cancel')->get(ADM_LANG) }}</a>
+            <a href="{{URL::base().'/'.ADM_URI}}/navigation" class="btn cancel">{{ Lang::line('navigation::lang.Cancel')->get(ADM_LANG) }}</a>
         </div>
     {{ Form::close() }}
 </div>
