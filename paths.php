@@ -22,7 +22,7 @@
 */
 
 $environments = array(
-    'develop'    => array('http://myopengrid.dev', '*.dev'),
+    'develop'    => array('http://myopengrid.dev*', '*.dev'),
     'staging'    => array('http://staging.myopengrid.com', '*.org','*.com','*.com.br'),
     'production' => array('http://myopengrid.com', '*.org','*.com','*.com.br'),
     'test'       => array(''),
