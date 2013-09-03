@@ -17,6 +17,7 @@ set :normalize_asset_timestamps, app_config['config']['normalize_asset_timestamp
 ssh_options[:port] =             app_config['config']['port']
 set :shared_path,                "#{app_config['config']['shared_path']}#{application}/shared"
 set :timestamp_now,              (Time.now.strftime '%Y-%m-%d--%H:%M:%S')
+set :local_db_backup_path,       app_config['config']['local_db_backup_path']
 
 
 # Ignore system, logs, etc...
@@ -40,7 +41,6 @@ namespace :deploy do
 
     desc "Backup Production Database"
     task :backupdb, :roles => :app, :except => { :no_release => true } do
-
         db_config = YAML.load(File.read(File.expand_path("../application/config/#{enviroment}/#{enviroment}.yml", __FILE__)))
 
         run "mkdir -p #{tmp_backups_path}#{release_name}/" unless remote_dir_exists?("#{tmp_backups_path}#{release_name}/")
@@ -56,9 +56,13 @@ namespace :deploy do
                     run "rm -rf #{tmp_backups_path}#{release_name}/#{filename}"
                     
                     logger.debug "Dumping database [#{db["name"]}]"
-                    cmd = "mysqldump --add-drop-table --opt --compress -u #{db["user"]} --password=#{db["pass"]} --host=#{db["host"]} #{db["name"]} > #{tmp_backups_path}#{release_name}/#{filename}"
-                    run(cmd) do |channel, stream, data|
-                        puts data
+                    run "mysqldump --add-drop-table --opt --compress -h #{db["host"]} -u #{db["user"]} -p #{db["name"]} "+
+                    "> #{tmp_backups_path}#{release_name}/#{filename}" do |ch, _, out| 
+                        if out =~ /^Enter password: /
+                            ch.send_data "#{db["pass"]}\n"
+                        else
+                            puts out 
+                        end
                     end
 
                     # compress the file on the server
@@ -97,7 +101,7 @@ namespace :deploy do
 
             logger.debug "Compressing backup files..."
             set :archive_name, "RB4-#{release_name}_#{timestamp_now}.tar.gz"
-            run "cd #{tmp_backups_path} && tar cmzf - #{release_name}/ | gzip -c --best > #{backups_path}/#{archive_name}/"
+            run "cd #{tmp_backups_path} && tar cmzf - #{release_name}/ | gzip -c --best > #{backups_path}/#{archive_name}"
         end
 
         # Remove tmp folder
@@ -113,7 +117,6 @@ namespace :deploy do
 
     desc "Create storage folders if it does not exit"
     task :create_storage do
-        
         storage_directories = %w(cache database logs sessions views work)
 
         if remote_dir_exists?("#{shared_path}/storage")
@@ -126,7 +129,6 @@ namespace :deploy do
             
             run "chmod 777 #{shared_path}/storage"
         end
-
     end
 
     desc "Clean up old backups."
@@ -154,5 +156,110 @@ namespace :deploy do
                 logger.important e.message
             end
         end
+    end
+
+    desc "Create a compressed MySQL dumpfile of the remote database"
+    task :remote_create_dump, :roles => :db do
+        db_config = YAML.load(File.read(File.expand_path("../application/config/#{enviroment}/#{enviroment}.yml", __FILE__)))
+        db_config.each do |key, value|
+            if key == enviroment
+                value.each do |key, db|
+                    
+                    filename = "#{db["name"]}.sql"
+                    logger.debug "Removing any old remote dump file if any ..."
+                    run "rm -rf /tmp/#{filename} /tmp/#{filename}.gz"
+                    logger.debug "Dumping remote database [#{db["name"]}]"
+                    
+                    run "mysqldump --add-drop-table --opt --compress -h #{db["host"]} -u #{db["user"]} -p #{db["name"]} "+
+                        "> /tmp/#{filename}" do |ch, _, out| 
+                            if out =~ /^Enter password: /
+                                ch.send_data "#{db["pass"]}\n"
+                            else
+                                puts out 
+                            end
+                        end
+
+                    logger.debug "Compressing remote database [#{db["name"]}]"
+                    run "gzip -9 /tmp/#{filename}"
+                end
+            end
+        end
+    end
+
+    desc "Download remotely created MySQL dumpfile to local machine via SCP"
+    task :remote_get_dump, :roles => :db do
+        db_config = YAML.load(File.read(File.expand_path("../application/config/#{enviroment}/#{enviroment}.yml", __FILE__)))
+        db_config.each do |key, value|
+            if key == enviroment
+                value.each do |key, db|
+                    filename = "#{db["name"]}.sql.gz"
+                    logger.debug "Downloading remote database dump [/tmp/#{filename}]"
+                    system("scp -P #{app_config['config']['port']} #{user}@#{application}:/tmp/#{filename} /tmp/")
+                    logger.debug "Removing remote database dump from [/tmp/#{filename}]"
+                    run "rm -rf /tmp/#{filename}"
+                end
+            end
+        end
+    end
+
+    desc "Restore remotely created MySQL dumpfile to local database"
+    task :local_restore_dump, :roles => :db do
+        db_local_config = YAML.load(File.read(File.expand_path("../application/config/develop/develop.yml", __FILE__)))
+        db_config       = YAML.load(File.read(File.expand_path("../application/config/#{enviroment}/#{enviroment}.yml", __FILE__)))
+
+        db_config.each do |key, value|
+            if key == "#{enviroment}"
+                value.each do |key, db|
+                    
+                    db_name     = "#{db_local_config['develop'][key]['name']}"
+                    db_user     = "#{db_local_config['develop'][key]['user']}"
+                    db_host     = "#{db_local_config['develop'][key]['host']}"
+                    db_pass     = "#{db_local_config['develop'][key]['pass']}"
+                    filename    = "#{db["name"]}.sql"
+                    backup_name = "#{db["name"]}_#{timestamp_now}.sql"
+                    
+                    # check for compressed file and decompress
+                    if local_file_exists?("/tmp/#{filename}.gz")
+                        logger.debug "Decompressing local dump [/tmp/#{filename}.gz] ..."
+                        system("gunzip -f /tmp/#{filename}.gz")
+                    end
+                    
+                    if local_file_exists?("/tmp/#{filename}")
+                        
+                        # run through replacements on SQL file
+                        # db_regex_hash.each_pair do |local, remote|
+                        #     system "perl -pi -e 's/#{remote}/#{local}/g' #{filename}"
+                        # end
+
+                        # Creat local directory for local backups if not exists
+                        system "mkdir -p #{local_db_backup_path}" unless local_dir_exists?("#{local_db_backup_path}")
+                        
+                        # Make a backup of local database and compress it
+                        logger.debug "Dumping local backup database to [#{local_db_backup_path}/#{backup_name}] ..."
+                        system "mysqldump --add-drop-table --opt --compress -h #{db_host} -u #{db_user} -p#{db_pass} #{db_name} > #{local_db_backup_path}/#{backup_name}"
+
+                        logger.debug "Compressing local backup database [#{local_db_backup_path}/#{backup_name}.gz] ..."
+                        system "gzip -9 #{local_db_backup_path}/#{backup_name}"
+
+                        # Restore database from dump downloaded from server
+                        logger.debug "Restoring local database dump file [/tmp/#{filename}] to [#{db_name}] database ..."
+                        system "mysql -h #{db_host} -u #{db_user} -p#{db_pass} #{db_name} < /tmp/#{filename}"
+                        # Remove dump downloaded from server
+                        logger.debug "Removing local file dump from /tmp/#{filename}"
+                        system "rm -f /tmp/#{filename}"
+                       
+                    else
+                        logger.debug "Dump file for database [#{db["name"]}] was not found local [/tmp/#{db["name"]}]"
+                    end
+                end
+            end
+        end
+    end
+
+    desc "Migrate remote application database to local server"
+    task :import_db, :roles => :db, :except => { :no_release => true } do
+        remote_create_dump
+        remote_get_dump
+        local_restore_dump
     end
 end
