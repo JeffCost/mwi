@@ -108,6 +108,7 @@ class Registration_Frontend_Registration_Controller extends Public_Controller {
                 $activation_record          = new Registration\Model\Code;
                 $activation_record->user_id = $new_user->id;
                 $activation_record->code    = Mwi_Core::keygen();
+                $activation_record->type    = 'activation';
                 $activation_record->save();
 
                 // new xblade to parse the email template
@@ -229,6 +230,7 @@ class Registration_Frontend_Registration_Controller extends Public_Controller {
             $pwreset_record          = new Registration\Model\Code;
             $pwreset_record->user_id = $account->id;
             $pwreset_record->code    = Mwi_Core::keygen();
+            $pwreset_record->type    = 'password_reset';
             $pwreset_record->save();
 
             // send password reset email

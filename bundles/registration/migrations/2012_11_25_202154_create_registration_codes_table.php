@@ -14,6 +14,7 @@ class Registration_Create_Registration_Codes_Table {
 			$table->increments('id');
 			$table->integer('user_id');
 			$table->string('code');
+			$table->string('type')->default('activation');
 			$table->timestamps();
 		});
 	}
