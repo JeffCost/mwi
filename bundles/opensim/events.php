@@ -36,7 +36,7 @@ if((bool)$db_is_ready)
         }
         else
         {
-            Log::error('Opensim event: update account for [' . $user->uuid . '] does not exist.');
+            Log::error('Opensim event: update account for ['.$user->uuid.'] does not exist.');
         }
     });
 
