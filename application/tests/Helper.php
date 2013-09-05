@@ -1,6 +1,7 @@
 <?php namespace Tests;
 // application/libraries/tests/helper.php
 
+use \Laravel\CLI\Command as Command;
 /*
  The test helper
 */
@@ -36,18 +37,17 @@ class Helper {
             //     $migration = \sqlite_exec($database['database'], "SELECT sql FROM sqlite_master WHERE sql NOT NULL");
             // }
 
-            
-            if($migration_table['0']->count  == '0')
+            if(isset($migration_table['0']->count) and $migration_table['0']->count  == '0')
             {
-                \Laravel\CLI\Command::run(array('migrate:install'));
+                Command::run(array('migrate:install'));
                 echo "\n";
-                \Laravel\CLI\Command::run(array('migrate'));
+                Command::run(array('migrate'));
             }
             else
             {
-                \Laravel\CLI\Command::run(array('migrate:reset'));
+                Command::run(array('migrate:reset'));
                 echo "\n";
-                \Laravel\CLI\Command::run(array('migrate'));
+                Command::run(array('migrate'));
             }
 
 

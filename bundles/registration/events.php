@@ -52,9 +52,19 @@ Event::listen('registration.user_signup', function($user)
 Event::listen('app.cron', function()
 {
     $yesterday = date('Y-m-d H:i:s', strtotime("-1 day", time()));
-    $old_codes = \Registration\Model\Code::where('created_at', '<', $yesterday)->get();
+    $old_codes = Registration\Model\Code::where('created_at', '<', $yesterday)->get();
     foreach ($old_codes as $code) 
     {
+        if($code->type == 'activation')
+        {
+            $user = Users\Model\User::find($code->user_id);
+            if( ! empty($user))
+            {
+                $user->delete();
+                // Fire opensim event to remove user
+                Event::fire('users.delete', $user);
+            }
+        }
         $code->delete();
     }
 });

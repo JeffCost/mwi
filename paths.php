@@ -22,8 +22,10 @@
 */
 
 $environments = array(
-    'local' => array('http://localhost*', '*.dev'),
-    'prod' => array('http://mydomain*', '*.org','*.com','*.com.br'),
+    'develop'    => array('http://myopengrid.dev*', '*.dev'),
+    'staging'    => array('http://staging.myopengrid.com', '*.org','*.com','*.com.br'),
+    'production' => array('http://myopengrid.com', '*.org','*.com','*.com.br'),
+    'test'       => array(''),
 );
 
 // --------------------------------------------------------------
