@@ -42,8 +42,7 @@ publish
 test
 storage
 
-/bundles
-/public
+/public/media
 /application/config/develop
 /application/config/test
 /application/config/staging
