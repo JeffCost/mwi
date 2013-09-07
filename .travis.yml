@@ -14,6 +14,7 @@ before_script:
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS mwi_tests;" -uroot; fi
   - cd ~/builds
   - git clone git://github.com/JeffCost/travis.git
+  - ls -la
   - mv ./travis ./mwi/bundles/travis
   - mv ./mwi/bundles/travis/tests ./mwi/application/config
   - mv ./mwi/bundles/travis/paths.php ./mwi/paths.php
