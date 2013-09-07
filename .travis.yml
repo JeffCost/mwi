@@ -11,7 +11,7 @@ env:
   - DB=mysql
 
 before_script:
-  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS mwi_tests;" -uroot; fi
+  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS installer;" -uroot; fi
   - echo "<?php " > ./application/bundles.php
   - echo "return array("  >> ./application/bundles.php
   - echo "'settings' => array('auto'    => true, 'handles' => 'settings',)," >> ./application/bundles.php
