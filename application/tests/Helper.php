@@ -81,6 +81,9 @@ class Helper {
         
         \Request::foundation()->request->add($post_data);
 
-        return $request->call();
+        if(!empty($request))
+        {
+            return $request->call();
+        }
     }
 }

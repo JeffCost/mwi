@@ -15,9 +15,11 @@ class Auth_Test extends \PHPUnit_Framework_TestCase
     {
         \Laravel\Session::load();
         \Bundle::start('settings');
+        \Bundle::start('install');
         \Bundle::start('modules');
         \Bundle::start('themes');
         \Bundle::start('admin');
+        \Bundle::start('auth');
 
         \Bundle::start('users');
         \DB::table('users')->delete();
