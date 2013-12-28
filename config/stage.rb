@@ -11,5 +11,5 @@ task :staging do
 
 end
 
-after 'deploy:update_code', 'deploy:symlink_shared', 'deploy:create_storage', 'deploy:setconfig', 'deploy:backupdb', 'deploy:bkpfiles', 'deploy:cleanup'
-# after 'deploy:update_code', 'deploy:symlink_shared', 'deploy:create_storage', 'deploy:setconfig', 'deploy:cleanup'
+#after 'deploy:update_code', 'deploy:symlink_shared', 'deploy:create_storage', 'deploy:setconfig', 'deploy:backupdb', 'deploy:bkpfiles', 'deploy:cleanup'
+after 'deploy:update_code', 'deploy:symlink_shared', 'deploy:create_storage', 'deploy:setconfig', 'deploy:cleanup'
