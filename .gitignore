@@ -42,7 +42,7 @@ publish
 test
 storage
 
-/public/buncles
+/public/bundles
 /public/media
 /application/config/develop
 /application/config/test
