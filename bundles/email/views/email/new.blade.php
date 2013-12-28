@@ -126,7 +126,7 @@ var OLD_POST_EMAILS = "{{$old_post}}";
         <button class="btn btn-primary" value="save" name="btnAction" type="submit">
             <span>{{ __('email::lang.Send')->get(ADM_LANG) }}</span>
         </button>
-        <a class="btn gray cancel" href="{{ URL::base().'/'.ADM_URI }}/email/default_templates">{{ __('email::lang.Cancel')->get(ADM_LANG) }}</a>
+        <a class="btn gray cancel" href="{{ URL::base().'/'.ADM_URI }}/email">{{ __('email::lang.Cancel')->get(ADM_LANG) }}</a>
     </div>
     {{ Form::close() }}
     </div>
