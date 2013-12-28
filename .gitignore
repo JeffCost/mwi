@@ -41,3 +41,11 @@ publish
 .idea
 test
 storage
+
+/public/bundles
+/public/media
+/application/config/develop
+/application/config/test
+/application/config/staging
+/application/config/production
+Cap.config.yml
