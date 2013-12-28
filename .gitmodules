@@ -1,18 +1,18 @@
 [submodule "gridmap"]
     path = bundles/gridmap
-    url = git@github.com:Myopengrid/gridmap.git
+    url = https://github.com/Myopengrid/gridmap.git
 [submodule "mediafiles"]
     path = bundles/mediafiles
-    url = git@github.com:JeffCost/mediafiles.git
+    url = https://github.com/JeffCost/mediafiles.git
 [submodule "osmigration"]
     path = bundles/osmigration
-    url = git@github.com:Myopengrid/osmigration.git
+    url = https://github.com/Myopengrid/osmigration.git
 [submodule "osofflineim"]
     path = bundles/osofflineim
-    url = git@github.com:Myopengrid/osofflineim.git
+    url = https://github.com/Myopengrid/osofflineim.git
 [submodule "osregistration"]
     path = bundles/osregistration
-    url = git@github.com:Myopengrid/osregistration.git
+    url = https://github.com/Myopengrid/osregistration.git
 [submodule "thumbnails"]
     path = bundles/thumbnails
-    url = git@github.com:Myopengrid/thumbnails.git
+    url = https://github.com/Myopengrid/thumbnails.git
