@@ -43,7 +43,7 @@ return array(
 			'port'       => Config::get('settings::core.mail_smtp_port'),
 			'username'   => Config::get('settings::core.mail_smtp_user'),
 			'password'   => Config::get('settings::core.mail_smtp_pass'),
-			'encryption' => null,
+			'encryption' => 'ssl',
 		),
 
 		'sendmail' => array(
