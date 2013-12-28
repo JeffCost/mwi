@@ -1,5 +1,7 @@
-Myopengrid Web Interface
+Myopengrid Website
 ===
+
+If you are looking for Mwi Framework please checkout here: [Mwi Framework](https://github.com/Myopengrid/mwi)
 
 [![Build Status](https://secure.travis-ci.org/JeffCost/mwi.png)](http://travis-ci.org/JeffCost/mwi)
 

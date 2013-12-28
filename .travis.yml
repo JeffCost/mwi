@@ -3,6 +3,7 @@ language: php
 php:
   - 5.3
   - 5.4
+  - 5.5
 
 services:
   - mysql
@@ -12,19 +13,16 @@ env:
 
 before_script:
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS mwi_tests;" -uroot; fi
-  - echo "<?php " > ./application/bundles.php
-  - echo "return array("  >> ./application/bundles.php
-  - echo "'settings' => array('auto'    => true, 'handles' => 'settings',)," >> ./application/bundles.php
-  - echo "'modules' => array('auto'    => true, 'handles' => 'modules',)," >> ./application/bundles.php
-  - echo "'admin' => array('auto' => true)," >> ./application/bundles.php
-  - echo "'themes' => array('auto' => true)," >> ./application/bundles.php
-  - echo "'auth' => array('auto' => true,'handles' => 'login')," >> ./application/bundles.php
-  - echo "'users' => array('auto' => true, ),);" >> ./application/bundles.php
+  - ls --color=auto
+  - export CLICOLOR=1
+  - git clone git://github.com/JeffCost/travis.git
+  - mv ./travis ./bundles/travis
+  - mv ./bundles/travis/tests ./application/config
+  - mv ./bundles/travis/paths.php ./paths.php
+  - mv ./bundles/travis/application.php ./application/config/application.php
+  - echo "<?php return array('travis' => array('auto' => true));" > ./application/bundles.php
 
-script: 
-  - php artisan test
-  - php artisan test users
-  - php artisan test auth
-  - php artisan test admin
-  - php artisan test settings
-  - php artisan test themes
+
+script:
+  - php artisan travis::test:installapp
+  - ./run_all_tests.sh
