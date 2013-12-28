@@ -24,7 +24,7 @@
 $environments = array(
     'develop'    => array('http://myopengrid.dev*', '*.dev'),
     'staging'    => array('http://staging.myopengrid.com'),
-    'production' => array('http://myopengrid.com', 'http://www.myopengrid.com'),
+    'production' => array('http://myopengrid.com', 'http://www.myopengrid.com', 'https://myopengrid.com'),
     'test'       => array(''),
 );
 
