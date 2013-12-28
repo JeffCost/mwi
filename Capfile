@@ -4,6 +4,7 @@ require 'yaml'
 load 'deploy'
 load 'config/common'
 load 'config/stage'
+load 'config/production'
 
 set :app_config, YAML.load(File.read(File.expand_path("../Cap.config.yml", __FILE__)))
 
