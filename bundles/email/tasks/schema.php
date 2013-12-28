@@ -58,7 +58,7 @@ class Email_Schema_Task {
             'default'     => '', 
             'value'       => '', 
             'options'     => '', 
-            'class'       => 'conf-sendmail', 
+            'class'       => 'conf-smtp', 
             'section'     => '',
             'validation'  => '', 
             'is_gui'      => '1', 
