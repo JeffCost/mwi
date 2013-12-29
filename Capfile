@@ -3,8 +3,8 @@ require 'yaml'
 
 load 'deploy'
 load 'config/common'
-load 'config/stage'
 load 'config/production'
+load 'config/stage'
 
 set :app_config, YAML.load(File.read(File.expand_path("../Cap.config.yml", __FILE__)))
 
@@ -148,7 +148,7 @@ namespace :deploy do
             # fix permissions on the the files and directories before removing them
             archives.split(" ").each do |backup|
                 set_perms_dirs("#{backup}", 755) if File.directory?(backup)
-                set_perms_files("#{backup}", 644)
+                set_perms_files("#{backup}", 644) if File.directory?(backup)
             end
 
             run "rm -rf #{archives}"
